@@ -193,6 +193,9 @@ alias cd="z"
 # install atuin
 eval "$(atuin init zsh)"
 
+# aliases for git
+alias gp="git push"
+
 # SDKMAN for jdk
 export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
 
