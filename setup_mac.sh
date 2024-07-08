@@ -33,6 +33,7 @@ brew install thefuck
 brew install zoxide
 brew install stow
 brew install atuin
+brew install powerlevel10k
 
 echo "All packages installed successfully!"
 
@@ -41,8 +42,22 @@ if [ -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh is already installed."
 else
     echo "Cloning Oh My Zsh repository..."
-    # git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
-    git clone git@github.com:ydeng11/dotfiles.git ~/dotfiles
-    git clone git@github.com:junegunn/fzf-git.sh.git ~/.fzf-git.sh
+    git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
     echo "Oh My Zsh cloned successfully!"
+fi
+
+if [ -d "$HOME/dotfiles" ]; then
+    echo "dotfiles is already cloned."
+else
+    echo "Cloning dotfiles repository..."
+    git clone git@github.com:ydeng11/dotfiles.git ~/dotfiles
+    echo "dotfiles cloned successfully!"
+fi
+
+if [ -d "$HOME/.fzf-git.sh" ]; then
+    echo "fzf-git.sh is already cloned."
+else
+    echo "Cloning fzf-git.sh repository..."
+    git clone git@github.com:junegunn/fzf-git.sh.git ~/.fzf-git.sh
+    echo "fzf-git.sh cloned successfully!"
 fi
