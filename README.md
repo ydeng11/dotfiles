@@ -5,6 +5,7 @@ It includes the config for:
 - `bat` : better `cat`
 - `thefuck` : auto corrected command
 - `git` : version control
+- `stow` : the dotfiles management (actually a symlink management)
 - `oh my zsh` : zsh framework
 - `powerlevel10k` : zsh shell theme
 - `wezterm` : terminal emulator
@@ -14,3 +15,4 @@ It includes the config for:
 2. `sh setup_git.sh` setup github so we could pull repos at #3
 3. `sh setup_mac.sh` install the above packages using `homebrew`
 4. use `stow` to create the symlink for each config (**WARN:** remove the existing config created when installing the pacakge. Otherwise, `stow` will complain about the conflicted files.)
+    - e.g. run `stow zsh` to make symlink for `.zshrs`, `.zprofile` and `.p10k.zsh`
