@@ -23,6 +23,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # Install desired packages
 echo "Installing packages..."
 brew install --cask wezterm
+brew install --cask keepingyouawake
 brew install fzf
 brew install fd
 brew install bat
@@ -36,6 +37,7 @@ brew install node
 brew install hugo
 brew install atuin
 brew install powerlevel10k
+curl -s "https://get.sdkman.io" | bash
 
 echo "All packages installed successfully!"
 

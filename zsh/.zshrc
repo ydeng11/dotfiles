@@ -119,9 +119,6 @@ source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
 # install fzf
 eval "$(fzf --zsh)"
 
@@ -196,9 +193,6 @@ eval "$(atuin init zsh)"
 # aliases for git
 alias gp="git push"
 
-# SDKMAN for jdk
-export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
-
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+export SDKMAN_DIR="/opt/homebrew/opt/sdkman-cli/libexec"
+[[ -s "/opt/homebrew/opt/sdkman-cli/libexec/bin/sdkman-init.sh" ]] && source "/opt/homebrew/opt/sdkman-cli/libexec/bin/sdkman-init.sh"
