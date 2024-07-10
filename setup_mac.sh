@@ -32,6 +32,8 @@ brew install tlrc
 brew install thefuck
 brew install zoxide
 brew install stow
+brew install node
+brew install hugo
 brew install atuin
 brew install powerlevel10k
 
