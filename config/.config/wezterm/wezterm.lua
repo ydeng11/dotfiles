@@ -58,6 +58,12 @@ config.keys = {
   -- But Wezterm offers custom "mode" in the name of "KeyTable"
   { key = "r",          mods = "LEADER",      action = act.ActivateKeyTable { name = "resize_pane", one_shot = false } },
 
+  -- Move cursor by words
+  -- Make Option-Left equivalent to Alt-b which many line editors interpret as backward-word
+  {key="LeftArrow",     mods="OPT", action=wezterm.action{SendString="\x1bb"}},
+  -- Make Option-Right equivalent to Alt-f; forward-word
+  {key="RightArrow",    mods="OPT", action=wezterm.action{SendString="\x1bf"}},
+
   -- Tab keybindings
   { key = "t",          mods = "LEADER",      action = act.SpawnTab("CurrentPaneDomain") },
   { key = "[",          mods = "LEADER",      action = act.ActivateTabRelative(-1) },
