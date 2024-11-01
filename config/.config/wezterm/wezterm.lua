@@ -28,6 +28,14 @@ config.window_close_confirmation = "AlwaysPrompt"
 config.scrollback_lines = 3000
 config.default_workspace = "main"
 config.adjust_window_size_when_changing_font_size = true
+config.visual_bell = {
+  fade_in_function = 'EaseIn',
+  fade_in_duration_ms = 0,
+  fade_out_function = 'EaseOut',
+  fade_out_duration_ms = 0,
+}
+config.audible_bell = "Disabled"
+
 
 -- Dim inactive panes
 config.inactive_pane_hsb = {

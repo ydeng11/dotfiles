@@ -175,7 +175,7 @@ source ~/fzf-git.sh/fzf-git.sh
 export BAT_THEME=tokyonight_night
 
 # Alias for ls using eza
-alias ls='eza --color=always --long --git --icons=always'
+alias ls='eza --color=always --long --icons=always'
 
 # alias for thefuck
 eval $(thefuck --alias)
@@ -186,6 +186,9 @@ eval $(thefuck --alias fk)
 eval "$(zoxide init zsh)"
 
 alias cd="z"
+
+# alias for bat
+alias cat="bat"
 
 # install atuin
 eval "$(atuin init zsh)"

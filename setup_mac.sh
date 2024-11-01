@@ -41,6 +41,9 @@ curl -s "https://get.sdkman.io" | bash
 
 echo "All packages installed successfully!"
 
+# Download bat theme
+sh get_bat_theme.sh
+
 # Clone Oh My Zsh repository
 if [ -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh is already installed."
@@ -54,7 +57,7 @@ if [ -d "$HOME/dotfiles" ]; then
     echo "dotfiles is already cloned."
 else
     echo "Cloning dotfiles repository..."
-    git clone git@github.com:ydeng11/dotfiles.git ~/dotfiles
+    git https://github.com/ydeng11/dotfiles.git ~/dotfiles
     echo "dotfiles cloned successfully!"
 fi
 
@@ -62,6 +65,6 @@ if [ -d "$HOME/.fzf-git.sh" ]; then
     echo "fzf-git.sh is already cloned."
 else
     echo "Cloning fzf-git.sh repository..."
-    git clone git@github.com:junegunn/fzf-git.sh.git ~/.fzf-git.sh
+    git clone https://github.com/junegunn/fzf-git.sh.git ~/.fzf-git.sh
     echo "fzf-git.sh cloned successfully!"
 fi
