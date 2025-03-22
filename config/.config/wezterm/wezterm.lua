@@ -16,9 +16,8 @@ if wezterm.config_builder then config = wezterm.config_builder() end
 
 config.color_scheme = "Tokyo Night"
 config.font = wezterm.font_with_fallback({
+  { family = "JetBrainsMono Nerd Font Mono", scale = 1.2, weight = "Medium", },
   { family = "JetBrains Mono", scale = 1.2, weight = "Medium", },
-  { family = "Iosevka",       scale = 1.2, weight = "Medium", },
-  { family = "Symbols Nerd Font Mono", scale = 1.3, },
 })
 config.font_size = 14
 config.window_background_opacity = 0.9

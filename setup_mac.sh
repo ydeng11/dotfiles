@@ -36,7 +36,11 @@ brew install stow
 brew install node
 brew install hugo
 brew install atuin
+brew install uv
 brew install powerlevel10k
+brew install --cask font-jetbrains-mono
+brew install --cask font-jetbrains-mono-nerd-font
+
 curl -s "https://get.sdkman.io" | bash
 
 echo "All packages installed successfully!"
