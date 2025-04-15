@@ -72,3 +72,7 @@ else
     git clone https://github.com/junegunn/fzf-git.sh.git ~/.fzf-git.sh
     echo "fzf-git.sh cloned successfully!"
 fi
+
+echo "Installing Java SDK"
+sdk install java 24-tem
+sdk default java 24-tem
