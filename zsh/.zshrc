@@ -169,7 +169,7 @@ _fzf_comprun() {
   esac
 }
 
-source ~/fzf-git.sh/fzf-git.sh
+source ~/.fzf-git.sh/fzf-git.sh
 
 # Theme for BAT
 export BAT_THEME=tokyonight_night
