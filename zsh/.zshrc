@@ -200,3 +200,4 @@ alias gp="git push"
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/opt/homebrew/opt/sdkman-cli/libexec"
 [[ -s "/opt/homebrew/opt/sdkman-cli/libexec/bin/sdkman-init.sh" ]] && source "/opt/homebrew/opt/sdkman-cli/libexec/bin/sdkman-init.sh"
+export PATH="/Users/ihelio/.local/bin:$PATH"
