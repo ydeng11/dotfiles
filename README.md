@@ -25,7 +25,7 @@ This repository contains configuration files for various development tools and u
 - `node` : JavaScript runtime
 - `hugo` : static site generator
 - `uv` : Python package manager
-- `sdkman` : SDK management
+- `mise` : SDK/runtime management
 
 ### System Utilities
 - `stow` : dotfiles management via symlinks
@@ -80,4 +80,3 @@ After running the setup scripts and stowing your configurations:
 1. Restart your terminal or run `source ~/.zshrc`
 2. Configure any remaining tool-specific settings
 3. Enjoy your enhanced development environment!
-

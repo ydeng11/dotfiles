@@ -1,3 +1,10 @@
+# OPENSPEC:START
+# OpenSpec shell completions configuration
+fpath=("/Users/ihelio/.oh-my-zsh/custom/completions" $fpath)
+autoload -Uz compinit
+compinit
+# OPENSPEC:END
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -197,7 +204,13 @@ eval "$(atuin init zsh)"
 # aliases for git
 alias gp="git push"
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/opt/homebrew/opt/sdkman-cli/libexec"
-[[ -s "/opt/homebrew/opt/sdkman-cli/libexec/bin/sdkman-init.sh" ]] && source "/opt/homebrew/opt/sdkman-cli/libexec/bin/sdkman-init.sh"
+
 export PATH="/Users/ihelio/.local/bin:$PATH"
+source /Users/ihelio/.rulesify-completion.zsh
+
+export BD_BACKUP_GIT_PUSH=false
+
+# THIS MUST BE AT THE END OF THE FILE FOR MISE TO WORK!!!
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
