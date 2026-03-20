@@ -1,4 +1,19 @@
 #!/bin/bash
+set -e  # Exit on any error
+
+# Parse arguments
+DRY_RUN=false
+for arg in "$@"; do
+    if [[ "$arg" == "--dry-run" ]]; then
+        DRY_RUN=true
+    fi
+done
+
+if $DRY_RUN; then
+    echo "=== DRY RUN MODE ==="
+    echo "No changes will be made."
+    echo ""
+fi
 
 # Function to install Homebrew
 install_homebrew() {
