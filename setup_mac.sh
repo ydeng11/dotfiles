@@ -1,75 +1,165 @@
 #!/bin/bash
+set -e  # Exit on any error
 
-# Function to install Homebrew
-install_homebrew() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    # Add Homebrew to PATH
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+# Parse arguments
+DRY_RUN=false
+for arg in "$@"; do
+    if [[ "$arg" == "--dry-run" ]]; then
+        DRY_RUN=true
+    fi
+done
+
+if $DRY_RUN; then
+    echo "=== DRY RUN MODE ==="
+    echo "No changes will be made."
+    echo ""
+fi
+
+# Constants
+BREW_ZPROFILE_LINE='eval "$(/opt/homebrew/bin/brew shellenv)"'
+
+# Package arrays
+CASKS=("wezterm" "keepingyouawake" "raycast" "font-jetbrains-mono" "font-jetbrains-mono-nerd-font")
+PACKAGES=("fzf" "fd" "bat" "git-delta" "eza" "tlrc" "thefuck" "zoxide" "stow" "node" "hugo" "atuin" "uv" "mise" "powerlevel10k")
+
+# Detect Homebrew path
+get_brew_path() {
+    if command -v brew &> /dev/null; then
+        which brew
+    elif [[ -f /opt/homebrew/bin/brew ]]; then
+        echo "/opt/homebrew/bin/brew"
+    fi
 }
 
-# Check if Homebrew is installed, install if not
-if ! command -v brew &> /dev/null; then
-    echo "Homebrew not found. Installing Homebrew..."
+# Install Homebrew if not present
+install_homebrew() {
+    if $DRY_RUN; then
+        echo "[WOULD INSTALL] Homebrew"
+        echo "[WOULD ADD] Homebrew to ~/.zprofile"
+        return
+    fi
+
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Add to zprofile (idempotent)
+    mkdir -p ~/.config
+    if [[ ! -f ~/.zprofile ]] || ! grep -q 'brew shellenv' ~/.zprofile 2>/dev/null; then
+        echo "$BREW_ZPROFILE_LINE" >> ~/.zprofile
+    fi
+
+    eval "$(get_brew_path) shellenv"
+    echo "Homebrew installed."
+}
+
+# Check if Homebrew is installed
+BREW_PATH=$(get_brew_path)
+if [[ -z "$BREW_PATH" ]]; then
     install_homebrew
 else
-    echo "Homebrew is already installed. Updating Homebrew..."
-    brew update
+    if $DRY_RUN; then
+        echo "[ALREADY INSTALLED] Homebrew"
+    else
+        echo "Homebrew already installed. Updating..."
+        brew update
+    fi
 fi
 
-# Ensure Homebrew is in the PATH
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Ensure Homebrew is in PATH
+if [[ -n "$BREW_PATH" ]]; then
+    eval "$($BREW_PATH shellenv)"
+fi
 
-# Install desired packages
-echo "Installing packages..."
-brew install --cask wezterm
-brew install --cask keepingyouawake
-brew install fzf
-brew install fd
-brew install bat
-brew install git-delta
-brew install eza
-brew install tlrc
-brew install thefuck
-brew install zoxide
-brew install stow
-brew install node
-brew install hugo
-brew install atuin
-brew install uv
-brew install powerlevel10k
-brew install --cask raycast
-brew install --cask font-jetbrains-mono
-brew install --cask font-jetbrains-mono-nerd-font
-
-curl -s "https://get.sdkman.io" | bash
-
-echo "All packages installed successfully!"
-
-# Download bat theme
-sh get_bat_theme.sh
-
-# Clone Oh My Zsh repository
-if [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "Oh My Zsh is already installed."
+# Install packages
+if $DRY_RUN; then
+    echo ""
+    echo "[WOULD INSTALL] Casks:"
+    printf '  - %s\n' "${CASKS[@]}"
+    echo "[WOULD INSTALL] Packages:"
+    printf '  - %s\n' "${PACKAGES[@]}"
 else
-    echo "Cloning Oh My Zsh repository..."
-    git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
-    echo "Oh My Zsh cloned successfully!"
+    echo "Installing packages..."
+    for cask in "${CASKS[@]}"; do
+        brew install --cask "$cask"
+    done
+    for pkg in "${PACKAGES[@]}"; do
+        brew install "$pkg"
+    done
+    echo "All packages installed successfully!"
 fi
 
-if [ -d "$HOME/dotfiles" ]; then
-    echo "dotfiles is already cloned."
-else
-    echo "Cloning dotfiles repository..."
-    git https://github.com/ydeng11/dotfiles.git ~/dotfiles
-    echo "dotfiles cloned successfully!"
-fi
+# Install bat theme
+install_bat_theme() {
+    local theme_dir config_file
 
-if [ -d "$HOME/.fzf-git.sh" ]; then
-    echo "fzf-git.sh is already cloned."
-else
-    echo "Cloning fzf-git.sh repository..."
-    git clone https://github.com/junegunn/fzf-git.sh.git ~/.fzf-git.sh
-    echo "fzf-git.sh cloned successfully!"
-fi
+    # Compute paths lazily (bat must be installed)
+    theme_dir="$(bat --config-dir)/themes"
+    config_file="$(bat --config-dir)/config"
+
+    if [[ -f "$theme_dir/tokyonight_night.tmTheme" ]]; then
+        if $DRY_RUN; then
+            echo "[ALREADY INSTALLED] Bat theme (tokyonight_night)"
+        else
+            echo "Bat theme already installed."
+        fi
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo "[WOULD INSTALL] Bat theme (tokyonight_night)"
+        return
+    fi
+
+    echo "Installing bat theme..."
+    mkdir -p "$theme_dir"
+    curl -fsSL -o "$theme_dir/tokyonight_night.tmTheme" \
+        https://raw.githubusercontent.com/folke/tokyonight.nvim/main/extras/sublime/tokyonight_night.tmTheme
+    bat cache --build
+
+    # Update config (replace existing theme or append)
+    mkdir -p "$(dirname "$config_file")"
+    if [[ -f "$config_file" ]]; then
+        if grep -q '^--theme="tokyonight_night"' "$config_file"; then
+            : # Already correct, do nothing
+        elif grep -q '^--theme=' "$config_file"; then
+            # Replace existing theme line with different theme
+            sed -i '' 's/^--theme=.*/--theme="tokyonight_night"/' "$config_file"
+        else
+            echo '--theme="tokyonight_night"' >> "$config_file"
+        fi
+    else
+        echo '--theme="tokyonight_night"' >> "$config_file"
+    fi
+    echo "Bat theme installed."
+}
+
+install_bat_theme
+
+# Clone repositories (idempotent)
+clone_repo() {
+    local repo_url="$1"
+    local target_dir="$2"
+    local name="$3"
+
+    if [[ -d "$target_dir" ]]; then
+        if $DRY_RUN; then
+            echo "[ALREADY CLONED] $name"
+        else
+            echo "$name is already cloned."
+        fi
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo "[WOULD CLONE] $name -> $target_dir"
+        return
+    fi
+
+    echo "Cloning $name..."
+    git clone "$repo_url" "$target_dir"
+    echo "$name cloned successfully!"
+}
+
+clone_repo "https://github.com/ohmyzsh/ohmyzsh.git" "$HOME/.oh-my-zsh" "Oh My Zsh"
+clone_repo "https://github.com/ydeng11/dotfiles.git" "$HOME/dotfiles" "dotfiles"
+clone_repo "https://github.com/junegunn/fzf-git.sh.git" "$HOME/.fzf-git.sh" "fzf-git.sh"

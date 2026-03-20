@@ -1,2 +1,8 @@
 *.pyc
 *.DS_Store
+
+# Local app state (do not version)
+config/.config/beets/
+config/.config/goose/
+config/.config/MusicBrainz/
+config/.config/openspec/
