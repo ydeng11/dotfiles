@@ -15,6 +15,14 @@ Non-goals:
 - Error recovery/rollback (fail-fast is acceptable)
 - Verbose logging mode (simple output is sufficient)
 
+## Constants
+
+```bash
+BAT_THEME_DIR="$(bat --config-dir)/themes"
+BAT_CONFIG_FILE="$(bat --config-dir)/config"
+BREW_ZPROFILE_LINE='eval "$(/opt/homebrew/bin/brew shellenv)"'
+```
+
 ## Changes
 
 ### 1. Script Header and Flags
@@ -26,9 +34,22 @@ Non-goals:
 ### 2. Homebrew Installation
 
 - Detect brew path using `command -v brew` first, then fallback to checking `/opt/homebrew/bin/brew`
-- Idempotent zprofile modification (grep check before appending)
-- Dry-run shows what would happen
+- Idempotent zprofile modification:
+  - Grep pattern: `brew shellenv`
+  - Only append if not found
+  - Create `~/.zprofile` if it doesn't exist
 - `brew update` runs every time when brew is already installed (intentional - keeps brew updated)
+
+Dry-run output:
+```
+[WOULD INSTALL] Homebrew
+[WOULD ADD] Homebrew to ~/.zprofile
+```
+or
+```
+[ALREADY INSTALLED] Homebrew
+[WOULD UPDATE] Homebrew
+```
 
 ### 3. Package Installation
 
@@ -50,20 +71,44 @@ Non-goals:
 ### 4. Bat Theme
 
 - Replace the external `get_bat_theme.sh` script with an inline function
-- Check if `$THEME_DIR/tokyonight_night.tmTheme` exists before downloading
-- Config modification is idempotent (grep before appending)
-- Add `-f` flag to curl for silent fail on errors
+- Check if `$BAT_THEME_DIR/tokyonight_night.tmTheme` exists before downloading
+- Run `bat cache --build` after downloading theme
+- Config modification:
+  - File: `$BAT_CONFIG_FILE`
+  - Content to append: `--theme="tokyonight_night"`
+  - Grep pattern: `tokyonight_night`
+  - Create config file if it doesn't exist
+
+Dry-run output:
+```
+[WOULD INSTALL] Bat theme (tokyonight_night)
+```
+or
+```
+[ALREADY INSTALLED] Bat theme (tokyonight_night)
+```
 
 ### 5. Repository Cloning
 
-- Generic `clone_repo` function with signature: `clone_repo <url> <target_dir> <name>`
-- Dry-run prints: `[WOULD CLONE] <name> -> <target_dir>` or `[ALREADY CLONED] <name>`
-- Fix bug: line 64 was `git https://...`, should be `git clone https://...`
+Generic `clone_repo` function with signature: `clone_repo <url> <target_dir> <name>`
 
-### 6. External Script Integration
+Three repositories to clone:
+1. Oh My Zsh: `https://github.com/ohmyzsh/ohmyzsh.git` → `~/.oh-my-zsh`
+2. dotfiles: `https://github.com/ydeng11/dotfiles.git` → `~/dotfiles`
+3. fzf-git.sh: `https://github.com/junegunn/fzf-git.sh.git` → `~/.fzf-git.sh` (directory, not file)
 
-- `get_bat_theme.sh` is replaced by inline `install_bat_theme` function
-- No other external scripts are called
+Dry-run output (for each):
+```
+[WOULD CLONE] <name> -> <target_dir>
+```
+or
+```
+[ALREADY CLONED] <name>
+```
+
+Note on dotfiles: The script may be run from within dotfiles. If `~/dotfiles` already exists, skip cloning. The user can run setup from the cloned dotfiles directory.
+
+Bug fix: Line 64 was `git https://...`, should be `git clone https://...`
 
 ## Usage
 
