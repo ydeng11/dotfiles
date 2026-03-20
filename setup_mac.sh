@@ -70,30 +70,23 @@ if [[ -n "$BREW_PATH" ]]; then
     eval "$($BREW_PATH shellenv)"
 fi
 
-# Install desired packages
-echo "Installing packages..."
-brew install --cask wezterm
-brew install --cask keepingyouawake
-brew install fzf
-brew install fd
-brew install bat
-brew install git-delta
-brew install eza
-brew install tlrc
-brew install thefuck
-brew install zoxide
-brew install stow
-brew install node
-brew install hugo
-brew install atuin
-brew install uv
-brew install mise
-brew install powerlevel10k
-brew install --cask raycast
-brew install --cask font-jetbrains-mono
-brew install --cask font-jetbrains-mono-nerd-font
-
-echo "All packages installed successfully!"
+# Install packages
+if $DRY_RUN; then
+    echo ""
+    echo "[WOULD INSTALL] Casks:"
+    printf '  - %s\n' "${CASKS[@]}"
+    echo "[WOULD INSTALL] Packages:"
+    printf '  - %s\n' "${PACKAGES[@]}"
+else
+    echo "Installing packages..."
+    for cask in "${CASKS[@]}"; do
+        brew install --cask "$cask"
+    done
+    for pkg in "${PACKAGES[@]}"; do
+        brew install "$pkg"
+    done
+    echo "All packages installed successfully!"
+fi
 
 # Download bat theme
 sh get_bat_theme.sh
