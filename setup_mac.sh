@@ -88,8 +88,52 @@ else
     echo "All packages installed successfully!"
 fi
 
-# Download bat theme
-sh get_bat_theme.sh
+# Install bat theme
+install_bat_theme() {
+    local theme_dir config_file
+
+    # Compute paths lazily (bat must be installed)
+    theme_dir="$(bat --config-dir)/themes"
+    config_file="$(bat --config-dir)/config"
+
+    if [[ -f "$theme_dir/tokyonight_night.tmTheme" ]]; then
+        if $DRY_RUN; then
+            echo "[ALREADY INSTALLED] Bat theme (tokyonight_night)"
+        else
+            echo "Bat theme already installed."
+        fi
+        return
+    fi
+
+    if $DRY_RUN; then
+        echo "[WOULD INSTALL] Bat theme (tokyonight_night)"
+        return
+    fi
+
+    echo "Installing bat theme..."
+    mkdir -p "$theme_dir"
+    curl -fsSL -o "$theme_dir/tokyonight_night.tmTheme" \
+        https://raw.githubusercontent.com/folke/tokyonight.nvim/main/extras/sublime/tokyonight_night.tmTheme
+    bat cache --build
+
+    # Update config (replace existing theme or append)
+    mkdir -p "$(dirname "$config_file")"
+    if [[ -f "$config_file" ]]; then
+        if grep -q '^--theme="tokyonight_night"' "$config_file"; then
+            : # Already correct, do nothing
+        elif grep -q '^--theme=' "$config_file"; then
+            # Replace existing theme line with different theme
+            sed -i '' 's/^--theme=.*/--theme="tokyonight_night"/' "$config_file"
+        else
+            echo '--theme="tokyonight_night"' >> "$config_file"
+        fi
+    else
+        echo '--theme="tokyonight_night"' >> "$config_file"
+    fi
+    echo "Bat theme installed."
+}
+
+install_bat_theme
 
 # Clone Oh My Zsh repository
 if [ -d "$HOME/.oh-my-zsh" ]; then
