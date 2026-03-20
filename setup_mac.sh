@@ -22,25 +22,53 @@ BREW_ZPROFILE_LINE='eval "$(/opt/homebrew/bin/brew shellenv)"'
 CASKS=("wezterm" "keepingyouawake" "raycast" "font-jetbrains-mono" "font-jetbrains-mono-nerd-font")
 PACKAGES=("fzf" "fd" "bat" "git-delta" "eza" "tlrc" "thefuck" "zoxide" "stow" "node" "hugo" "atuin" "uv" "mise" "powerlevel10k")
 
-# Function to install Homebrew
-install_homebrew() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    # Add Homebrew to PATH
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+# Detect Homebrew path
+get_brew_path() {
+    if command -v brew &> /dev/null; then
+        which brew
+    elif [[ -f /opt/homebrew/bin/brew ]]; then
+        echo "/opt/homebrew/bin/brew"
+    fi
 }
 
-# Check if Homebrew is installed, install if not
-if ! command -v brew &> /dev/null; then
-    echo "Homebrew not found. Installing Homebrew..."
+# Install Homebrew if not present
+install_homebrew() {
+    if $DRY_RUN; then
+        echo "[WOULD INSTALL] Homebrew"
+        echo "[WOULD ADD] Homebrew to ~/.zprofile"
+        return
+    fi
+
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Add to zprofile (idempotent)
+    mkdir -p ~/.config
+    if [[ ! -f ~/.zprofile ]] || ! grep -q 'brew shellenv' ~/.zprofile 2>/dev/null; then
+        echo "$BREW_ZPROFILE_LINE" >> ~/.zprofile
+    fi
+
+    eval "$(get_brew_path) shellenv"
+    echo "Homebrew installed."
+}
+
+# Check if Homebrew is installed
+BREW_PATH=$(get_brew_path)
+if [[ -z "$BREW_PATH" ]]; then
     install_homebrew
 else
-    echo "Homebrew is already installed. Updating Homebrew..."
-    brew update
+    if $DRY_RUN; then
+        echo "[ALREADY INSTALLED] Homebrew"
+    else
+        echo "Homebrew already installed. Updating..."
+        brew update
+    fi
 fi
 
-# Ensure Homebrew is in the PATH
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Ensure Homebrew is in PATH
+if [[ -n "$BREW_PATH" ]]; then
+    eval "$($BREW_PATH shellenv)"
+fi
 
 # Install desired packages
 echo "Installing packages..."
