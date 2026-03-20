@@ -18,10 +18,15 @@ Non-goals:
 ## Constants
 
 ```bash
-BAT_THEME_DIR="$(bat --config-dir)/themes"
-BAT_CONFIG_FILE="$(bat --config-dir)/config"
+# Only BREW_ZPROFILE_LINE is defined at top level
 BREW_ZPROFILE_LINE='eval "$(/opt/homebrew/bin/brew shellenv)"'
+
+# Package arrays
+CASKS=("wezterm" "keepingyouawake" "raycast" "font-jetbrains-mono" "font-jetbrains-mono-nerd-font")
+PACKAGES=("fzf" "fd" "bat" "git-delta" "eza" "tlrc" "thefuck" "zoxide" "stow" "node" "hugo" "atuin" "uv" "mise" "powerlevel10k")
 ```
+
+Note: Bat theme paths (`BAT_THEME_DIR`, `BAT_CONFIG_FILE`) are computed lazily inside the `install_bat_theme` function since `bat` must be installed first.
 
 ## Changes
 
@@ -48,35 +53,29 @@ Dry-run output:
 or
 ```
 [ALREADY INSTALLED] Homebrew
-[WOULD UPDATE] Homebrew
 ```
 
 ### 3. Package Installation
 
-- Define packages in arrays at top of file for easy modification
+- Packages defined in arrays at top of file (see Constants section)
 - `brew install` is already idempotent (skips installed packages), so no additional checks needed
-- Dry-run prints human-readable list:
-  ```
-  [WOULD INSTALL] Casks:
-    - wezterm
-    - keepingyouawake
-    ...
-  [WOULD INSTALL] Packages:
-    - fzf
-    - fd
-    ...
-  ```
-- Use loops instead of individual install lines
+- Dry-run prints human-readable list of all casks and packages
+- Use loops to iterate through arrays
 
 ### 4. Bat Theme
 
 - Replace the external `get_bat_theme.sh` script with an inline function
+- Paths are computed inside the function (bat must be installed first):
+  ```bash
+  BAT_THEME_DIR="$(bat --config-dir)/themes"
+  BAT_CONFIG_FILE="$(bat --config-dir)/config"
+  ```
 - Check if `$BAT_THEME_DIR/tokyonight_night.tmTheme` exists before downloading
-- Run `bat cache --build` after downloading theme
+- Run `bat cache --build` after downloading theme (not shown in dry-run - just part of installation)
 - Config modification:
-  - File: `$BAT_CONFIG_FILE`
-  - Content to append: `--theme="tokyonight_night"`
-  - Grep pattern: `tokyonight_night`
+  - If config has a different `--theme=` line, replace it with `--theme="tokyonight_night"`
+  - If config has no theme line, append `--theme="tokyonight_night"`
+  - If config already has `tokyonight_night`, do nothing
   - Create config file if it doesn't exist
 
 Dry-run output:
@@ -91,6 +90,8 @@ or
 ### 5. Repository Cloning
 
 Generic `clone_repo` function with signature: `clone_repo <url> <target_dir> <name>`
+
+- `name` is a human-readable label for dry-run output and logging only
 
 Three repositories to clone:
 1. Oh My Zsh: `https://github.com/ohmyzsh/ohmyzsh.git` → `~/.oh-my-zsh`
