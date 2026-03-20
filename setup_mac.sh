@@ -15,6 +15,13 @@ if $DRY_RUN; then
     echo ""
 fi
 
+# Constants
+BREW_ZPROFILE_LINE='eval "$(/opt/homebrew/bin/brew shellenv)"'
+
+# Package arrays
+CASKS=("wezterm" "keepingyouawake" "raycast" "font-jetbrains-mono" "font-jetbrains-mono-nerd-font")
+PACKAGES=("fzf" "fd" "bat" "git-delta" "eza" "tlrc" "thefuck" "zoxide" "stow" "node" "hugo" "atuin" "uv" "mise" "powerlevel10k")
+
 # Function to install Homebrew
 install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
