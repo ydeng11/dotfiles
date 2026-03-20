@@ -135,27 +135,31 @@ install_bat_theme() {
 
 install_bat_theme
 
-# Clone Oh My Zsh repository
-if [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "Oh My Zsh is already installed."
-else
-    echo "Cloning Oh My Zsh repository..."
-    git clone https://github.com/ohmyzsh/ohmyzsh.git ~/.oh-my-zsh
-    echo "Oh My Zsh cloned successfully!"
-fi
+# Clone repositories (idempotent)
+clone_repo() {
+    local repo_url="$1"
+    local target_dir="$2"
+    local name="$3"
 
-if [ -d "$HOME/dotfiles" ]; then
-    echo "dotfiles is already cloned."
-else
-    echo "Cloning dotfiles repository..."
-    git https://github.com/ydeng11/dotfiles.git ~/dotfiles
-    echo "dotfiles cloned successfully!"
-fi
+    if [[ -d "$target_dir" ]]; then
+        if $DRY_RUN; then
+            echo "[ALREADY CLONED] $name"
+        else
+            echo "$name is already cloned."
+        fi
+        return
+    fi
 
-if [ -d "$HOME/.fzf-git.sh" ]; then
-    echo "fzf-git.sh is already cloned."
-else
-    echo "Cloning fzf-git.sh repository..."
-    git clone https://github.com/junegunn/fzf-git.sh.git ~/.fzf-git.sh
-    echo "fzf-git.sh cloned successfully!"
-fi
+    if $DRY_RUN; then
+        echo "[WOULD CLONE] $name -> $target_dir"
+        return
+    fi
+
+    echo "Cloning $name..."
+    git clone "$repo_url" "$target_dir"
+    echo "$name cloned successfully!"
+}
+
+clone_repo "https://github.com/ohmyzsh/ohmyzsh.git" "$HOME/.oh-my-zsh" "Oh My Zsh"
+clone_repo "https://github.com/ydeng11/dotfiles.git" "$HOME/dotfiles" "dotfiles"
+clone_repo "https://github.com/junegunn/fzf-git.sh.git" "$HOME/.fzf-git.sh" "fzf-git.sh"
