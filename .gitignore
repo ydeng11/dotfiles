@@ -7,3 +7,7 @@ config/.config/goose/
 config/.config/MusicBrainz/
 config/.config/openspec/
 config/.config/raycast/
+config/.config/clother/
+config/.config/frida/
+config/.config/opencode/
+config/.config/spicetify/
