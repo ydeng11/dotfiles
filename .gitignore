@@ -6,3 +6,4 @@ config/.config/beets/
 config/.config/goose/
 config/.config/MusicBrainz/
 config/.config/openspec/
+config/.config/raycast/

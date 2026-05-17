@@ -112,6 +112,9 @@ fi
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
+# Load and export environment variables from ~/.env if it exists
+set -a; [[ -f ~/.env ]] && source ~/.env; set +a
+
 # install fzf
 eval "$(fzf --zsh)"
 
@@ -198,7 +201,6 @@ eval "$(atuin init zsh)"
 # aliases for git
 alias gp="git push"
 
-
 export PATH="/Users/ihelio/.local/bin:$PATH"
 
 # THIS MUST BE AT THE END OF THE FILE FOR MISE TO WORK!!!
@@ -206,3 +208,5 @@ if command -v mise >/dev/null 2>&1; then
   eval "$(mise activate zsh)"
 fi
 export PATH="/Users/ihelio/bin:$PATH"
+
+export PATH=$PATH:/Users/ihelio/.spicetify
