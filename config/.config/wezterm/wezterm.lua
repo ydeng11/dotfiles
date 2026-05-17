@@ -270,6 +270,7 @@ config.leader = {
 }
 
 local keys = {
+  { key = "Enter", mods = "SHIFT", action = act.SendKey({ key = "J", mods = "CTRL" }) },
   { key = "a", mods = "LEADER|CTRL", action = act.SendKey({ key = "a", mods = "CTRL" }) },
   { key = "phys:Space", mods = "LEADER", action = act.ActivateCommandPalette },
   { key = "/", mods = "LEADER", action = act.ActivateCommandPalette },
