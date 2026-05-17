@@ -11,3 +11,5 @@ config/.config/clother/
 config/.config/frida/
 config/.config/opencode/
 config/.config/spicetify/
+config/.config/graphite/
+cursor/
