@@ -112,8 +112,8 @@ fi
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-# Load and export environment variables from ~/.env if it exists
-set -a; [[ -f ~/.env ]] && source ~/.env; set +a
+# Load and export environment variables from ~/.env and ~/.zshenv if they exist
+set -a; [[ -f ~/.zshenv ]] && source ~/.zshenv; [[ -f ~/.env ]] && source ~/.env; set +a
 
 # install fzf
 eval "$(fzf --zsh)"
